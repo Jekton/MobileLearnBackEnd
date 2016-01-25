@@ -31,7 +31,7 @@ User:
                 CAP_UPLOAD_FILE, CAP_UPLOAD_LECTURE,
                 CAP_ADD_REVIEW
         managedCourses[]
-        takingCourses[]
+        takenCourses[]
 
 Course
 
@@ -43,13 +43,11 @@ Course
         managedBy[]
         lectureNum
         Lectures[]
-
+        watchTo[] // for each lecture
 
 Lecture
         path
 
 
-TakenCourse
-        Course
-        watchTo[]  // for each lecture
+
 

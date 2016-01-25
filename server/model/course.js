@@ -25,7 +25,8 @@ let courseSchema = mongoose.Schema({
     lectureNum: Number,
     lectures: {
         path: String
-    }
+    },
+    watchTo: [Number]
 });
 
 
