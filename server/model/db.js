@@ -51,3 +51,4 @@ process.on('SIGINT', function () {
 
 // BRING IN YOUR SCHEMAS & MODELS
 require('./user');
+require('./course');
