@@ -9,3 +9,6 @@ node_modules
 
 public
 views
+
+# just added for testing some
+test.js

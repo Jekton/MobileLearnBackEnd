@@ -1,13 +1,22 @@
 /api/login
 /api/register
 
+# all courses
 /api/courses
+
+# a specific course
 /api/course/:course_id
+
+# a lecture of a course
 /api/course/:course_id/:lecture_id
 
+# basic user info
 /api/:user_id
+
+# couses of a user, both managed and taken of
 /api/:user_id/courses
 
+# adminstrator
 /api/admin
 
 
@@ -28,9 +37,10 @@ Course
 
         name
         desc
-        catagories
-        capability
-                CAP_OWN, CAP_ADMIN, CAP_TAKING
+        catagories[]
+                cat_cs
+        createdBy
+        managedBy[]
         lectureNum
         Lectures[]
 

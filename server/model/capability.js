@@ -18,14 +18,3 @@ module.exports.UserCapability = {
 };
 
 
-module.exports.CourseCapability = {
-    get CAP_OWN() {
-        return 1;
-    },
-    get CAP_ADMIN() {
-        return 2;
-    },
-    get CAP_TAKING() {
-        return 4;
-    }
-};

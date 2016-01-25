@@ -1,7 +1,7 @@
 'use strict';
 let mongoose = require('mongoose');
 let crypto = require('crypto');
-let jwt = require('jwt');
+let jwt = require('jsonwebtoken');
 
 let userSchema = new mongoose.Schema({
     email: {
@@ -14,7 +14,9 @@ let userSchema = new mongoose.Schema({
         required: true
     },
     hash: String,
-    salt: String
+    salt: String,
+    capability: Number,
+    
 });
 
 
