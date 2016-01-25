@@ -1,0 +1,45 @@
+/api/login
+/api/register
+
+/api/courses
+/api/course/:course_id
+/api/course/:course_id/:lecture_id
+
+/api/:user_id
+/api/:user_id/courses
+
+/api/admin
+
+
+
+User:
+        email (login credential)
+        username
+        hash (hashed password)
+        salt (used by hashing)
+        capability
+                CAP_ADMIN, CAP_CREATE_COURSE,
+                CAP_UPLOAD_FILE, CAP_UPLOAD_LECTURE,
+                CAP_ADD_REVIEW
+        managedCourses[]
+        takingCourses[]
+
+Course
+
+        name
+        desc
+        catagories
+        capability
+                CAP_OWN, CAP_ADMIN, CAP_TAKING
+        lectureNum
+        Lectures[]
+
+
+Lecture
+        path
+
+
+TakenCourse
+        Course
+        watchTo[]  // for each lecture
+
