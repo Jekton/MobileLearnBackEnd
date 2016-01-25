@@ -2,7 +2,7 @@
 let mongoose = require('mongoose');
 let crypto = require('crypto');
 let jwt = require('jsonwebtoken');
-let course = require('course');
+let course = require('./course');
 
 let userSchema = new mongoose.Schema({
     email: {

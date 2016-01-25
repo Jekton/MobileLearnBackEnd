@@ -38,7 +38,6 @@ Course
         name
         desc
         catagories[]
-                cat_cs
         createdBy
         managedBy[]
         lectureNum
