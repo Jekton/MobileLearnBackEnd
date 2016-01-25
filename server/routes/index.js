@@ -6,14 +6,13 @@ var auth = jwt({
     userProperty: 'payload'
 });
 
-var authController = require('../controller/authentication');
 
 /* GET home page. */
 router.get('/', auth, function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/api/register', require('../controller/register'));
+//router.post('/api/login', authController.login);
 
 module.exports = router;
