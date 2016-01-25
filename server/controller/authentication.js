@@ -1,13 +1,9 @@
-var passport = require('passport');
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
+'use strict';
 
-
-function sendJsonResponse(res, status, content) {
-    res.status(status);
-    res.json(content);
-}
-
+let passport = require('passport');
+let mongoose = require('mongoose');
+let User = mongoose.model('User');
+let sendJsonResponse = require('../common/utils').sendJsonResponse;
 
 module.exports.register = function(req, res) {
     if (!req.body.name || !req.body.email || !req.body.password) {
