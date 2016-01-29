@@ -32,8 +32,14 @@ app.use(session({
     secret: 'CatOnKeyboard',
     resave: false,
     saveUninitialized: false,
-    //key: 'session',
-    proxy: 'true'
+    proxy: 'true',
+    cookie: {
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        maxAge: 60 * 60 * 1000    // a hour
+    }
+    
     // TODO: need a store for prodect
 }));
 app.use(express.static(path.join(__dirname, 'public')));

@@ -10,7 +10,6 @@ let User = mongoose.model('User');
 passport.use(new LocalStrategy({
     usernameField: 'email'
 }, function(username, password, done) {
-    console.log('in passport');
     User.findOne({ email: username }, function(err, user) {
         
         if (err) return done(err);
@@ -24,7 +23,6 @@ passport.use(new LocalStrategy({
                 message: 'Incorrect password'
             });
         }
-
         return done(null, user);
     });
 }
