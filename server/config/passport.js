@@ -1,15 +1,16 @@
 'use strict';
 
 let passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
+let LocalStrategy = require('passport-local').Strategy;
+let mongoose = require('mongoose');
+let User = mongoose.model('User');
 
 
 
 passport.use(new LocalStrategy({
     usernameField: 'email'
 }, function(username, password, done) {
+    console.log('in passport');
     User.findOne({ email: username }, function(err, user) {
         
         if (err) return done(err);

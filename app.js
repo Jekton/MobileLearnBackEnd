@@ -1,9 +1,10 @@
 require('dotenv').load();
 var express = require('express');
+var session = require('express-session');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+//var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 
@@ -24,10 +25,21 @@ var app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// Since version 1.5.0, the cookie-parser middleware no longer
+// needs to be used for this module to work
+//app.use(cookieParser());
+app.use(session({
+    secret: 'CatOnKeyboard',
+    resave: false,
+    saveUninitialized: false,
+    //key: 'session',
+    proxy: 'true'
+    // TODO: need a store for prodect
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(passport.initialize());
+
 
 app.use('/', routes);
 
