@@ -41,7 +41,7 @@ module.exports = function(req, res) {
         return;
     }
         
-    var user = new User();
+    let user = new User();
 
     user.name = req.body.name;
     user.email = req.body.email;
@@ -51,9 +51,8 @@ module.exports = function(req, res) {
         if (err) {
             sendJsonResponse(res, 404, err);
         } else {
-            var token = user.generateJwt();
             sendJsonResponse(res, 200, {
-                token: token
+                message: 'register success'
             });
         }
     });

@@ -9,7 +9,8 @@ let sendJsonResponse = require('../common/utils').sendJsonResponse;
 function updateUserSession(session, user) {
     session.user = {
         // Store some infomation of user in the server
-        email: user.email
+        email: user.email,
+        capability: user.capability
     };
 }
 

@@ -11,6 +11,9 @@ var passport = require('passport');
 require('./server/model/db');
 require('./server/config/passport');
 
+// setup admin account, delete this line after created
+// require('./install');
+
 var routes = require('./server/routes/index');
 
 var app = express();
