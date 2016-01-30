@@ -45,6 +45,7 @@ exports.grantUser = function(req, res) {
     
     let userId = req.body.user_id;
     let cap = req.body.cap;
+    let revoke = req.body.revoke;
 
     if (!userId || !cap) {
         sendJsonMessage(res, 400, "All field required");
@@ -63,7 +64,11 @@ exports.grantUser = function(req, res) {
                 sendJsonMessage(res, 500,
                                 'fail to update user capability');
             } else {
-                user.capability |= cap;
+                if (revoke) {
+                    user.capability &= ~cap;
+                } else {
+                    user.capability |= cap;
+                }
                 user.save(function(err) {
                     if (err) {
                         sendJsonMessage(res, 500,
