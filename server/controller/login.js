@@ -81,7 +81,8 @@ module.exports.logout = function(req, res) {
         });
     } else {
         sendJsonResponse(res, 412, {
-            message: 'not yet logined'
+            message: 'not yet login'
         });
     }
+    
 };

@@ -2,6 +2,7 @@
 ################### api ###############################
 
 /api/login
+/api/logout
 /api/register
 
 # all courses
@@ -26,6 +27,10 @@
 
 
 ######################## admin ##########################
+
+
+/api/admin/users
+/api/admin/grant/:user_id
 
 
 User:
