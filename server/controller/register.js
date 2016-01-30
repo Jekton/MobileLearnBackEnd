@@ -2,7 +2,7 @@
 
 let passport = require('passport');
 let mongoose = require('mongoose');
-let User = mongoose.model('User');
+let makeUser = require('../model/user').makeUser;
 let sendJsonResponse = require('../common/utils').sendJsonResponse;
 
 function regExpValidate(reg, string) {
@@ -31,22 +31,22 @@ function validateRegisterInfo(name, email, password) {
         && validatePassword(password);
 }
 
+
 module.exports = function(req, res) {
     console.log('registering');
 
-    if (!validateRegisterInfo(req.body.name, req.body.email, req.body.password)) {
+    if (!validateRegisterInfo(req.body.name,
+                              req.body.email,
+                              req.body.password)) {
         sendJsonResponse(res, 400, {
             'message': 'invalid register info'
         });
         return;
     }
-        
-    let user = new User();
-
-    user.name = req.body.name;
-    user.email = req.body.email;
-    user.setPassword(req.body.password);
-
+            
+    let user = makeUser(req.body.name,
+                        req.body.email,
+                        req.body.password);
     user.save(function(err) {
         if (err) {
             sendJsonResponse(res, 404, err);

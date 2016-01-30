@@ -2,6 +2,7 @@
 let mongoose = require('mongoose');
 let crypto = require('crypto');
 let course = require('./course');
+let UserCapability = require('../model/capability').UserCapability;
 
 let userSchema = new mongoose.Schema({
     email: {
@@ -34,4 +35,17 @@ userSchema.methods.validPassword = function(password) {
 
 
 mongoose.model('User', userSchema, 'users');
-module.exports = userSchema;
+module.exports.userSchema = userSchema;
+
+let User = mongoose.model('User');
+module.exports.makeUser = function(name, email, password) {
+    let user = new User();
+
+    user.name = name;
+    user.email = email;
+    user.setPassword(password);
+    user.capability = UserCapability.CAP_UPLOAD_FILE
+        | UserCapability.CAP_ADD_REVIEW;
+    
+    return user;
+};
