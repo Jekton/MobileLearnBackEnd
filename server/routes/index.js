@@ -14,8 +14,9 @@ router.get('/api/logout', loginController.logout);
 
 
 // admin
-let adminControlller = require('../controller/admin');
-router.get('/api/admin/users', adminControlller.getUsers);
+let adminController = require('../controller/admin');
+router.get('/api/admin/users', adminController.getUsers);
+router.post('/api/admin/grant', adminController.grantUser);
 
 
 module.exports = router;

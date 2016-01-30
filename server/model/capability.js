@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports.UserCapability = {
     // prevent unintentional modification
     get CAP_ADMIN() {
@@ -14,7 +16,15 @@ module.exports.UserCapability = {
     },
     get CAP_ADD_REVIEW() {
         return 16;
+    },
+
+    get NR_MAX_CAP() {
+        // a user can set multi-capability by bit-wise or several caps
+        return 32;
     }
 };
 
 
+module.exports.isUserCapabilityValid = function(cap) {
+    return cap < exports.UserCapability.NR_MAX_CAP;
+};
