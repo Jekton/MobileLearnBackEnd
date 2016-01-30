@@ -25,4 +25,4 @@ exports.checkAdminCapability = function(req, res) {
     }
 
     return true;
-}
+};

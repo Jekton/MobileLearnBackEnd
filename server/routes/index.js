@@ -14,9 +14,13 @@ router.get('/api/logout', loginController.logout);
 
 
 // admin
-let adminController = require('../controller/admin');
-router.get('/api/admin/users', adminController.getUsers);
-router.post('/api/admin/grant', adminController.grantUser);
+let Administrator = require('../controller/admin');
+router.get('/api/admin/users', Administrator.getUsers);
+router.post('/api/admin/grant', Administrator.grantUser);
 
+
+// manage course
+let CourseManager = require('../controller/course_manager');
+router.post('/api/course', CourseManager.createCourse);
 
 module.exports = router;

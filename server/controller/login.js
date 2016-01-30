@@ -10,6 +10,7 @@ function updateUserSession(session, user) {
     session.user = {
         // Store some infomation of user in the server
         email: user.email,
+        id: user._id,
         capability: user.capability
     };
 }

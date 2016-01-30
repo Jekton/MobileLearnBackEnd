@@ -1,17 +1,27 @@
 'use strict';
 let mongoose = require('mongoose');
+let myUtils = require('../common/utils');
+let sendJsonMessage = myUtils.sendJsonMessage;
 
 let CourseCategory = {
     get CAT_COMPUTER_SCIENCE() {
         return 0;
+    },
+
+    get NR_CAT_MAX() {
+        return 1;
     }
 };
-module.exports.CourseCategory = CourseCategory;
+exports.CourseCategory = CourseCategory;
+exports.isCategoryValid = function(cat) {
+    return cat < CourseCategory.NR_CAT_MAX;
+};
 
 let courseSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     desc: {
         type: String,
@@ -27,7 +37,11 @@ let courseSchema = mongoose.Schema({
     lectures: {
         path: String
     },
-    watchTo: [Number]
+    watchTo: [Number],
+    publish: {
+        type: Boolean,
+        "default": false
+    }
 });
 
 module.exports.courseSchema = courseSchema;
@@ -41,4 +55,17 @@ module.exports.cat2string = function(cat) {
     default:
         return '';
     }
+};
+
+let Course = mongoose.model('Course');
+module.exports.makeCourse = function(name, desc, categories, userId) {
+    let course = new Course();
+    course.name = name;
+    course.desc = desc;
+    course.categories = categories;
+    course.createdBy = userId;
+    course.managedBy.push(userId);
+    course.lectureNum = 0;
+
+    return course;
 };
