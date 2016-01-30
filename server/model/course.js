@@ -29,10 +29,11 @@ let courseSchema = mongoose.Schema({
     },
     categories: [Number],
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
+        // creator's email
+        type: String,
         required: true
     },
-    managedBy: [mongoose.Schema.Types.ObjectId],
+    managedBy: [String],
     lectureNum: Number,
     lectures: {
         path: String
@@ -58,13 +59,13 @@ module.exports.cat2string = function(cat) {
 };
 
 let Course = mongoose.model('Course');
-module.exports.makeCourse = function(name, desc, categories, userId) {
+module.exports.makeCourse = function(name, desc, categories, email) {
     let course = new Course();
     course.name = name;
     course.desc = desc;
     course.categories = categories;
-    course.createdBy = userId;
-    course.managedBy.push(userId);
+    course.createdBy = email;
+    course.managedBy.push(email);
     course.lectureNum = 0;
 
     return course;

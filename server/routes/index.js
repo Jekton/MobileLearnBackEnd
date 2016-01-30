@@ -22,5 +22,6 @@ router.post('/api/admin/grant', Administrator.grantUser);
 // manage course
 let CourseManager = require('../controller/course_manager');
 router.post('/api/course', CourseManager.createCourse);
+router.get('/api/course', CourseManager.getManagedCourses);
 
 module.exports = router;
