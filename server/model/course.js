@@ -5,7 +5,7 @@ let CourseCategory = {
     get CAT_COMPUTER_SCIENCE() {
         return 0;
     }
-}
+};
 module.exports.CourseCategory = CourseCategory;
 
 let courseSchema = mongoose.Schema({

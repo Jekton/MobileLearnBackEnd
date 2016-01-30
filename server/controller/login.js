@@ -4,7 +4,7 @@ let passport = require('passport');
 let mongoose = require('mongoose');
 let User = mongoose.model('User');
 let sendJsonResponse = require('../common/utils').sendJsonResponse;
-
+let util = require('util');
 
 function updateUserSession(session, user) {
     session.user = {
@@ -62,4 +62,26 @@ module.exports.login = function(req, res) {
             onLoginFail(req, res);
         }
     })(req, res);
+};
+
+
+module.exports.logout = function(req, res) {
+    if (req.session) {
+        req.session.destroy(function(err) {
+            if (err) {
+                console.error(util.inspect(err));
+                sendJsonResponse(res, 500, {
+                    message: 'logout fail'
+                });
+            }
+
+            sendJsonResponse(res, 200, {
+                message: 'logout success'
+            });
+        });
+    } else {
+        sendJsonResponse(res, 412, {
+            message: 'not yet logined'
+        });
+    }
 };
