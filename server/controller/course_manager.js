@@ -97,7 +97,7 @@ exports.updateCourse = function(req, res) {
         return;
     }
 
-    if (!req.body.name || !req.body.categories || !req.body.desc || !req.body.id) {
+    if (!req.body.name || !req.body.categories || !req.body.desc) {
         myUtils.sendJsonMessage(res, 400 , 'All field required');
         return;
     }
@@ -107,11 +107,11 @@ exports.updateCourse = function(req, res) {
         return;
     }
 
-    let publish = req.body.publish ? true : false;
+    let publish = Number.parseInt(req.body.publish) ? true : false;
 
     let user = req.session.user;
     Course
-        .findById(req.body.id)
+        .findById(req.params.course_id)
         .exec(function(err, course) {
             if (err) {
                 myUtils.sendJsonMessage(res, 400, 'invalid course id');
