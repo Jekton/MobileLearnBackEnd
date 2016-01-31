@@ -12,12 +12,12 @@ let permission = require('../common/permission');
 
 
 exports.getUsers = function(req, res) {
-    if (!permission.checkAdminCapability(req, res)) {
+    let user = req.session.user;
+
+    if (!permission.checkAdminCapability(user, res)) {
         return;
     }
     
-    let user = req.session.user;
-
     User.find({}, function(err, users) {
         var userMap = {};
 
@@ -39,7 +39,7 @@ exports.getUsers = function(req, res) {
 
 
 exports.grantUser = function(req, res) {
-    if (!permission.checkAdminCapability(req, res)) {
+    if (!permission.checkAdminCapability(req.session.user, res)) {
         return;
     }
     

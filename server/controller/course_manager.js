@@ -3,7 +3,7 @@
 let mongoose = require('mongoose');
 let UserCapability = require('../model/capability').UserCapability;
 let myUtils = require('../common/utils');
-let checkLogin = require('../common/permission').checkLogin;
+let permission = require('../common/permission');
 let CourseUtil = require('../model/course');
 let Course = mongoose.model('Course');
 let User = mongoose.model('User');
@@ -61,16 +61,11 @@ function processRawCategories(res, categories) {
 
 
 exports.createCourse = function(req, res) {
-    if (!checkLogin(req, res)) {
-        return;
-    }
-
     let user = req.session.user;
-    if (!(user.capability & UserCapability.CAP_ADMIN)
-        && !(user.capability & UserCapability.CAP_CREATE_COURSE)) {
-        myUtils.sendJsonMessage(res, 401, 'Permission deny');
+
+    if (!permission.checkCourseCreatorCap(user, res)) {
         return;
-    }
+    };
 
     if (!req.body.name || !req.body.categories) {
         myUtils.sendJsonMessage(res, 400 , 'All field required');
@@ -93,7 +88,9 @@ exports.createCourse = function(req, res) {
 
 
 exports.updateCourse = function(req, res) {
-    if (!checkLogin(req, res)) {
+    let user = req.session.user;
+
+    if (!permission.checkLogin(user, res)) {
         return;
     }
 
@@ -109,7 +106,6 @@ exports.updateCourse = function(req, res) {
 
     let publish = Number.parseInt(req.body.publish) ? true : false;
 
-    let user = req.session.user;
     Course
         .findById(req.params.course_id)
         .exec(function(err, course) {
@@ -145,11 +141,12 @@ exports.updateCourse = function(req, res) {
 
 
 exports.getManagedCourses = function(req, res) {
-    if (!checkLogin(req, res)) {
+    let user = req.session.user;
+    if (!permission.checkLogin(user, res)) {
         return;
     }
 
-    User.findById(req.session.user.id)
+    User.findById(user.id)
         .select('managedCourses')
         .exec(function(err, user) {
             if (err) {
