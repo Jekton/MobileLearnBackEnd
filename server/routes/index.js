@@ -15,7 +15,7 @@ router.get('/api/logout', loginController.logout);
 // admin
 let Administrator = require('../controller/admin');
 router.get('/api/admin/users', Administrator.getUsers);
-router.post('/api/admin/grant', Administrator.grantUser);
+router.post('/api/admin/grant/:user_id', Administrator.grantUser);
 
 
 // manage course

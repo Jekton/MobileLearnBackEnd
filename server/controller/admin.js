@@ -43,11 +43,12 @@ exports.grantUser = function(req, res) {
         return;
     }
     
-    let userId = req.body.user_id;
+    let userId = req.params.user_id;
+    console.log(userId);
     let cap = req.body.cap;
-    let revoke = req.body.revoke;
+    let revoke = Number.parseInt(req.body.revoke);
 
-    if (!userId || !cap) {
+    if (!cap) {
         sendJsonMessage(res, 400, "All field required");
         return;
     }
@@ -57,7 +58,7 @@ exports.grantUser = function(req, res) {
         return;
     }
 
-    let user = User.findById(userId)
+    User.findById(userId)
         .select('capability')
         .exec(function(err, user) {
             if (err) {
