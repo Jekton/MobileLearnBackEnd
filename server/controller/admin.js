@@ -2,12 +2,12 @@
 
 let mongoose = require('mongoose');
 let User = mongoose.model('User');
-let myUtils = require('../common/utils');
+let myUtils = require('../utils/utils');
 let sendJsonResponse = myUtils.sendJsonResponse;
 let sendJsonMessage = myUtils.sendJsonMessage;
 let capability = require('../model/capability');
 let UserCapability = capability.UserCapability;
-let permission = require('../common/permission');
+let permission = require('../utils/permission');
 
 
 

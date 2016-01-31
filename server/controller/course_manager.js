@@ -1,53 +1,22 @@
 'use strict';
 
 let mongoose = require('mongoose');
-let UserCapability = require('../model/capability').UserCapability;
-let myUtils = require('../common/utils');
-let permission = require('../common/permission');
-let CourseUtil = require('../model/course');
+let myUtils = require('../utils/utils');
+let permission = require('../utils/permission');
+let CourseUtil = require('../utils/course');
+let CourseCategoryUtil = require('../utils/course-category');
+let saveCourse = CourseUtil.saveCourse;
 let Course = mongoose.model('Course');
 let User = mongoose.model('User');
 
-function saveCourse(res, course, userId, updater) {
-    course.save(function(err, course) {
-        if (err) {
-            myUtils.sendJsonResponse(res, 400, {
-                message: 'fail to create course',
-                error: err
-            });
-            return;
-        }
-        console.log('%j', course);
-        User.findById(userId)
-            .select('managedCourses')
-            .exec(function(err, user) {
-                if (err) {
-                    myUtils.sendJsonResponse(res, 400, {
-                        message: 'fail to create course',
-                        error: err
-                    });
-                } else {
-                    updater(user, course);
-                    user.save(function(err) {
-                        if (err) {
-                            myUtils.sendJsonResponse(res, 400, {
-                                message: 'fail to save course',
-                                error: err
-                            });
-                        } else {
-                            myUtils.sendJsonResponse(res, 200, course);
-                        }
-                    });
-                }
-            });  
-    });
-}
 
 function processRawCategories(res, categories) {
+    console.log('processRawCategories');
     let cats = [];
     categories.split(',').forEach(function(n) {
         let cat = Number.parseInt(n);
-        if (!Number.isNaN(cat) && CourseUtil.isCategoryValid(cat)) {
+        if (!Number.isNaN(cat)
+            && CourseCategoryUtil.isCategoryValid(cat)) {
             cats.push(cat);
         }
     });
@@ -56,31 +25,33 @@ function processRawCategories(res, categories) {
         myUtils.sendJsonMessage(res, 400, 'invalid categories');
         return null;
     }
+    console.log('processRawCategories' + cats);
     return cats;
 }
 
 
 exports.createCourse = function(req, res) {
     let user = req.session.user;
-
+    console.log('enter create course');
     if (!permission.checkCourseCreatorCap(user, res)) {
         return;
     };
-
+    console.log('oo');
     if (!req.body.name || !req.body.categories) {
         myUtils.sendJsonMessage(res, 400 , 'All field required');
         return;
     }
-
+    console.log('oo');
     let cats = processRawCategories(res, req.body.categories);
     if (cats === null) {
         return;
     }
 
+    console.log('creating course');
     let course = CourseUtil.makeCourse(req.body.name,
                                    req.body.desc ? req.body.desc : '',
                                    cats,
-                                   user.email);
+                                       user.email);
     saveCourse(res, course, user.id, function(user, course) {
         user.managedCourses.push(course);
     });

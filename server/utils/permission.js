@@ -22,6 +22,7 @@ function makeChecker(cap, cap2) {
         cap2 = cap2 || cap;
         if (!(user.capability & cap)
             && !(user.capability & cap2)) {
+            console.log('no permission');
             sendJsonMessage(res, 401, 'Permission deny');
             return false;
         }

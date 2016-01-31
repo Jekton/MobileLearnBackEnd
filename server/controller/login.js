@@ -3,7 +3,7 @@
 let passport = require('passport');
 let mongoose = require('mongoose');
 let User = mongoose.model('User');
-let sendJsonResponse = require('../common/utils').sendJsonResponse;
+let sendJsonResponse = require('../utils/utils').sendJsonResponse;
 let util = require('util');
 
 function updateUserSession(session, user) {

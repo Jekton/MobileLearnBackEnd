@@ -3,7 +3,7 @@
 let passport = require('passport');
 let mongoose = require('mongoose');
 let makeUser = require('../model/user').makeUser;
-let sendJsonResponse = require('../common/utils').sendJsonResponse;
+let sendJsonResponse = require('../utils/utils').sendJsonResponse;
 
 function regExpValidate(reg, string) {
     return reg.test(string);
