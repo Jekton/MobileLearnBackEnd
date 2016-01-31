@@ -1,4 +1,3 @@
-
 'use strict';
 
 let express = require('express');
@@ -22,6 +21,7 @@ router.post('/api/admin/grant', Administrator.grantUser);
 // manage course
 let CourseManager = require('../controller/course_manager');
 router.post('/api/course', CourseManager.createCourse);
-router.get('/api/course', CourseManager.getManagedCourses);
+router.put('/api/course', CourseManager.updateCourse);
+router.get('/api/courses', CourseManager.getManagedCourses);
 
 module.exports = router;
