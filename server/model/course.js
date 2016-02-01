@@ -25,7 +25,10 @@ let courseSchema = mongoose.Schema({
         filename: String,
         path: String
     }],
-    watchTo: [Number],
+    files: [{
+        filename: String,
+        path: String
+    }],
     publish: {
         type: Boolean,
         "default": false

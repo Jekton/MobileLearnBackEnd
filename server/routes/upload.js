@@ -19,6 +19,8 @@ let uploader = require('../controller/upload');
 router.post('/api/:course_id/lecture',
             upload.single('lecture'),
             uploader.uploadLecture);
-
+router.post('/api/:course_id/file',
+            upload.single('file'),
+            uploader.uploadFile);
 
 module.exports = router;
