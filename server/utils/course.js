@@ -4,6 +4,8 @@ let User = mongoose.model('User');
 let Course = mongoose.model('Course');
 let myUtils = require('../utils/utils');
 let sendJsonMessage = myUtils.sendJsonMessage;
+let sendJsonResponse = myUtils.sendJsonResponse;
+let permission = require('../utils/permission');
 
 exports.saveCourse = function (res, course, userId, updater) {
     course.save(function(err, course) {
@@ -92,4 +94,31 @@ exports.removeCourse = function(res, courseId) {
                 sendJsonMessage(res, 200, 'Course deleted');
             });
         });
+};
+
+
+
+exports.getCoursesRelatedToUser = function(req,
+                                           res,
+                                           whichType,
+                                           chooser) {
+    let user = req.session.user;
+    if (!permission.checkLogin(user, res)) {
+        return;
+    }
+
+    User.findById(user.id)
+        .select(whichType)
+        .exec(function(err, user) {
+            if (err) {
+                sendJsonResponse(res, 400, {
+                    message: 'fail to create course',
+                    error: err
+                });
+            } else {
+                let courses = chooser(user);
+                sendJsonResponse(res, 200, courses);
+            }
+        });
+
 };

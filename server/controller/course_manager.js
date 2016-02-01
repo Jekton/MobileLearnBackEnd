@@ -5,11 +5,14 @@ let myUtils = require('../utils/utils');
 let sendJsonMessage = myUtils.sendJsonMessage;
 let sendJsonResponse = myUtils.sendJsonResponse;
 let permission = require('../utils/permission');
-let CourseUtil = require('../utils/course');
 let CourseCategoryUtil = require('../utils/course-category');
 let processRawCategories = CourseCategoryUtil.processRawCategories;
+
+let CourseUtil = require('../utils/course');
 let saveCourse = CourseUtil.saveCourse;
 let removeCourse = CourseUtil.removeCourse;
+let getCoursesRelatedToUser = CourseUtil.getCoursesRelatedToUser;
+
 let Course = mongoose.model('Course');
 let User = mongoose.model('User');
 
@@ -104,24 +107,9 @@ exports.updateCourse = function(req, res) {
 
 
 exports.getManagedCourses = function(req, res) {
-    let user = req.session.user;
-    if (!permission.checkLogin(user, res)) {
-        return;
-    }
-
-    User.findById(user.id)
-        .select('managedCourses')
-        .exec(function(err, user) {
-            if (err) {
-                sendJsonResponse(res, 400, {
-                    message: 'fail to create course',
-                    error: err
-                });
-            } else {
-                sendJsonResponse(res, 200, user.managedCourses);
-            }
-        });
-
+    getCoursesRelatedToUser(req, res, 'managedCourses', function(user) {
+        return user.managedCourses;
+    });
 };
 
 

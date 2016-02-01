@@ -10,6 +10,8 @@ let CourseCategoryUtil = require('../utils/course-category');
 let processRawCategories = CourseCategoryUtil.processRawCategories;
 let permission = require('../utils/permission');
 
+let CourseUtil = require('../utils/course');
+let getCoursesRelatedToUser = CourseUtil.getCoursesRelatedToUser;
 
 function doGetAllCourses(res, filter) {
     Course
@@ -111,4 +113,12 @@ exports.takeCourse = function(req, res) {
 
             saveTakenCourse(user.id, course);
         });
+};
+
+
+exports.takenCourses = function(req, res) {
+    getCoursesRelatedToUser(req, res, 'takenCourses', function(user) {
+        console.log(user.takenCourses);
+        return user.takenCourses;
+    });
 };
