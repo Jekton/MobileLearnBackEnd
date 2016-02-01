@@ -19,6 +19,11 @@ exports.getUsers = function(req, res) {
     }
     
     User.find({}, function(err, users) {
+        if (err) {
+            sendJsonMessage(res, 500, 'get users fail');
+            return;
+        }
+        
         var userMap = {};
 
         users.forEach(function(user) {

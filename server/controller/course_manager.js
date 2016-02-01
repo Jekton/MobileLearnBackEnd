@@ -2,10 +2,13 @@
 
 let mongoose = require('mongoose');
 let myUtils = require('../utils/utils');
+let sendJsonMessage = myUtils.sendJsonMessage;
+let sendJsonResponse = myUtils.sendJsonResponse;
 let permission = require('../utils/permission');
 let CourseUtil = require('../utils/course');
 let CourseCategoryUtil = require('../utils/course-category');
 let saveCourse = CourseUtil.saveCourse;
+let removeCourse = CourseUtil.removeCourse;
 let Course = mongoose.model('Course');
 let User = mongoose.model('User');
 
@@ -22,7 +25,7 @@ function processRawCategories(res, categories) {
     });
 
     if (cats.length === 0) {
-        myUtils.sendJsonMessage(res, 400, 'invalid categories');
+        sendJsonMessage(res, 400, 'invalid categories');
         return null;
     }
     console.log('processRawCategories' + cats);
@@ -32,22 +35,21 @@ function processRawCategories(res, categories) {
 
 exports.createCourse = function(req, res) {
     let user = req.session.user;
-    console.log('enter create course');
+
     if (!permission.checkCourseCreatorCap(user, res)) {
         return;
     };
-    console.log('oo');
+
     if (!req.body.name || !req.body.categories) {
-        myUtils.sendJsonMessage(res, 400 , 'All field required');
+        sendJsonMessage(res, 400 , 'All field required');
         return;
     }
-    console.log('oo');
+
     let cats = processRawCategories(res, req.body.categories);
     if (cats === null) {
         return;
     }
 
-    console.log('creating course');
     let course = CourseUtil.makeCourse(req.body.name,
                                    req.body.desc ? req.body.desc : '',
                                    cats,
@@ -58,6 +60,26 @@ exports.createCourse = function(req, res) {
 };
 
 
+function courseManager(res, courseId, user, manager) {
+    console.log('enter courseManager');
+    Course
+        .findById(courseId)
+        .exec(function(err, course) {
+            if (err) {
+                sendJsonMessage(res, 400, 'invalid course id');
+                return;
+            }
+
+            if (course.managedBy.indexOf(user.email) < 0) {
+                sendJsonMessage(res, 401, 'Permission deny');
+                return;
+            }
+
+            manager(course);
+        });
+}
+
+
 exports.updateCourse = function(req, res) {
     let user = req.session.user;
 
@@ -66,7 +88,7 @@ exports.updateCourse = function(req, res) {
     }
 
     if (!req.body.name || !req.body.categories || !req.body.desc) {
-        myUtils.sendJsonMessage(res, 400 , 'All field required');
+        sendJsonMessage(res, 400 , 'All field required');
         return;
     }
 
@@ -77,20 +99,8 @@ exports.updateCourse = function(req, res) {
 
     let publish = Number.parseInt(req.body.publish) ? true : false;
 
-    Course
-        .findById(req.params.course_id)
-        .exec(function(err, course) {
-            if (err) {
-                myUtils.sendJsonMessage(res, 400, 'invalid course id');
-                return;
-            }
-
-            if (course.managedBy.indexOf(user.email) < 0) {
-                myUtils.sendJsonMessage(res, 401, 'Permission deny');
-                return;
-            }
-
-            course.name = req.body.name;
+    courseManager(res, req.params.course_id, user, function(course) {
+        course.name = req.body.name;
             course.categories = cats;
             course.desc = req.body.desc;
             course.publish = publish;
@@ -107,7 +117,7 @@ exports.updateCourse = function(req, res) {
                     }
                 }
             });
-        });
+    });
 };
 
 
@@ -121,13 +131,148 @@ exports.getManagedCourses = function(req, res) {
         .select('managedCourses')
         .exec(function(err, user) {
             if (err) {
-                myUtils.sendJsonResponse(res, 400, {
+                sendJsonResponse(res, 400, {
                     message: 'fail to create course',
                     error: err
                 });
             } else {
-                myUtils.sendJsonResponse(res, 200, user.managedCourses);
+                sendJsonResponse(res, 200, user.managedCourses);
             }
         });
 
+};
+
+
+exports.deleteCourse = function(req, res) {
+    function removeLecturesAndFiles(course) {
+        course.lectures.forEach(
+            lecture => myUtils.deleteFile('./public' + lecture.path));
+        course.files.forEach(
+            file => myUtils.deleteFile('./public' + file.path));
+    }
+
+
+    let user = req.session.user;
+    if (!permission.checkLogin(user, res)) {
+        return;
+    }
+    
+    Course
+        .findById(req.params.course_id)
+        .exec(function(err, course) {
+            if (err) {
+                sendJsonMessage(res, 400, 'invalid course id');
+                return;
+            }
+
+            if (course.createdBy !== user.email) {
+                sendJsonMessage(res, 401, 'Permission deny');
+                return;
+            }
+
+            removeLecturesAndFiles(course);
+            removeCourse(res, course._id);
+        });
+};
+
+
+
+function doDeleteLectureOrFile(res,
+                               user,
+                               courseId,
+                               fileId,
+                               typeChooser) {
+    console.log('enter doDeleteLectureOrFile');
+
+    function removeFileOf(user) {
+        let courses = user.managedCourses;
+        let i;
+        for (i = 0; i < courses.length; ++i) {
+            // directly compare these two ids won't success
+            if (courses[i]._id.toString() == courseId) {
+                console.log('found course of managed by user');
+                break;
+            }
+        }
+        if (i === courses.length) return;
+        
+        let files = typeChooser(courses[i]);
+        for (i = 0; i < files.length; ++i) {
+            // directly compare these two ids won't success
+            if (files[i].id === fileId) {
+                console.log('found file of managed by user');
+                break;
+            }
+        }
+        if (i === files.length) return;
+
+        files.splice(i, 1);
+
+        user.save(function(err) {
+            if (err) {
+                console.log('error: %j', err);
+            }
+        });
+    }
+
+    
+    if (!permission.checkLogin(user, res)) {
+        return;
+    }
+    
+    courseManager(res, courseId, user, function(course) {
+        console.log('in courseManager');
+        let files = typeChooser(course);
+        let i;
+        for (i = 0; i < files.length; ++i) {
+            console.log(files[i]._id);
+            console.log(fileId);
+            console.log();
+            if (files[i]._id.toString() == fileId) break;
+        }
+        console.log(`i = ${i}, files.length = ${files.length}`);
+        if (i != files.length) {
+            myUtils.deleteFile('./public' + files[i].path);
+            files.splice(i, 1);
+            course.save(function(err) {
+                if (err) {
+                    console.error('error: %j', err);
+                    sendJsonMessage(res, 500, 'server error');
+                }
+            });
+
+            User.find({}, function(err, users) {
+                users.forEach(function(user) {
+                    removeFileOf(user);
+                });
+                
+                sendJsonMessage(res, 200, 'file deleted');
+            });
+        } else {
+            sendJsonMessage(res, 400, 'file not found');
+        }
+    });
+
+}
+
+exports.deleteLecture = function(req, res) {
+    console.log('in deleteLecture');
+    doDeleteLectureOrFile(res,
+                          req.session.user,
+                          req.params.course_id,
+                          req.params.lecture_id,
+                          function(course) {
+                              return course.lectures;
+                          });
+};
+
+
+exports.deleteFile = function(req, res) {
+    doDeleteLectureOrFile(res,
+                          req.session.user,
+                          req.params.course_id,
+                          req.params.file_id,
+                          function(course) {
+                              return course.files;
+                          });
 };

@@ -1,12 +1,13 @@
 'use strict';
 
-let fs = require('fs');
 let permission = require('../utils/permission');
 let myUtils = require('../utils/utils');
 let CourseUtil = require('../utils/course');
 let saveCourse = CourseUtil.saveCourse;
 let mongoose = require('mongoose');
 let Course = mongoose.model('Course');
+let Path = mongoose.model('Path');
+const crypto = require('crypto');
 
 
 function doAdd(res, courseId, userId, file, updater) {
@@ -21,12 +22,11 @@ function doAdd(res, courseId, userId, file, updater) {
                 // Note: dose not unroll the saved file
                 return;
             }
-            console.log('course found');
-            let toBeAdded = {
-                filename: file.originalname,
-                path: '/uploads/' + file.filename
-            };
-            console.log('coures: %j', course);
+            
+            let toBeAdded = new Path();
+            toBeAdded.filename = file.originalname;
+            toBeAdded.path = '/uploads/' + file.filename;
+
             updater(course, toBeAdded);
             saveCourse(res, course, userId, function(user, course) {
                 let courses = user.managedCourses;
@@ -41,7 +41,6 @@ function doAdd(res, courseId, userId, file, updater) {
 }
 
 function addLecture(res, courseId, userId, file) {
-    console.log('in addLecture');
     doAdd(res, courseId, userId, file, function(course, toBeAdded) {
         course.lectures.push(toBeAdded);
         course.lectureNum++;        
@@ -58,15 +57,13 @@ function makeUploadHandler(permissionChecker, adder) {
     function handler(req, res, next) {
         let user = req.session.user;
         if (!permissionChecker(user, res)) {
-            fs.unlink(req.file.path, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log('unlinked unauthorized uploaded file');
-                }
-            });
+            myUtils.deleteFile(req.file.path);
         } else {
-            console.log('going to add');
+            if (!req.file) {
+                myUtils.sendJsonMessage(res, 400, 'not file uploaded');
+                return;
+            }
+            
             adder(res,
                   req.params.course_id,
                   user.id,

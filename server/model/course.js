@@ -3,6 +3,12 @@ let mongoose = require('mongoose');
 let myUtils = require('../utils/utils');
 let sendJsonMessage = myUtils.sendJsonMessage;
 
+let pathSchema = mongoose.Schema({    
+        filename: String,
+        path: String
+});
+
+
 let courseSchema = mongoose.Schema({
     name: {
         type: String,
@@ -21,14 +27,8 @@ let courseSchema = mongoose.Schema({
     },
     managedBy: [String],
     lectureNum: Number,
-    lectures: [{
-        filename: String,
-        path: String
-    }],
-    files: [{
-        filename: String,
-        path: String
-    }],
+    lectures: [pathSchema],
+    files: [pathSchema],
     publish: {
         type: Boolean,
         "default": false
@@ -36,6 +36,8 @@ let courseSchema = mongoose.Schema({
 });
 
 
-module.exports.courseSchema = courseSchema;
+exports.courseSchema = courseSchema;
+exports.pathSchema = pathSchema;
 mongoose.model('Course', courseSchema, 'courses');
+mongoose.model('Path', pathSchema, 'pathes');
 

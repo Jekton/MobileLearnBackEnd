@@ -22,6 +22,11 @@ router.post('/api/admin/grant/:user_id', Administrator.grantUser);
 let CourseManager = require('../controller/course_manager');
 router.post('/api/course', CourseManager.createCourse);
 router.put('/api/course/:course_id', CourseManager.updateCourse);
+router.delete('/api/course/:course_id', CourseManager.deleteCourse);
 router.get('/api/courses', CourseManager.getManagedCourses);
+router.delete('/api/course/:course_id/lecture/:lecture_id',
+              CourseManager.deleteLecture);
+router.delete('/api/course/:course_id/file/:file_id',
+              CourseManager.deleteFile);
 
 module.exports = router;
