@@ -32,6 +32,6 @@ router.delete('/api/course/:course_id/file/:file_id',
 let CourseLearner = require('../controller/course_learner');
 router.get('/api/allcourses', CourseLearner.getAllCourses);
 router.get('/api/allcourses/:categories', CourseLearner.getAllCoursesOfCats);
-
+router.get('/api/takecourse/:course_id', CourseLearner.takeCourse);
 
 module.exports = router;

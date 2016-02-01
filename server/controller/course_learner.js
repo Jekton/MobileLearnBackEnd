@@ -5,8 +5,10 @@ let myUtils = require('../utils/utils');
 let sendJsonMessage = myUtils.sendJsonMessage;
 let sendJsonResponse = myUtils.sendJsonResponse;
 let Course = mongoose.model('Course');
+let User = mongoose.model('User');
 let CourseCategoryUtil = require('../utils/course-category');
 let processRawCategories = CourseCategoryUtil.processRawCategories;
+let permission = require('../utils/permission');
 
 
 function doGetAllCourses(res, filter) {
@@ -55,4 +57,58 @@ exports.getAllCoursesOfCats = function(req, res) {
 
         return result;
     });
+};
+
+
+exports.takeCourse = function(req, res) {
+    function saveTakenCourse(userId, course) {
+        User
+            .findById(userId)
+            .exec(function(err, user) {
+                if (err) {
+                    sendJsonMessage(res, 200, 'Invalid user');
+                    return;
+                }
+
+                let courses = user.takenCourses;
+                let taken = false;
+                for (let i = 0; i < courses.length; ++i) {
+                    if (courses[i]._id.toString() == course._id) {
+                        taken = true;
+                        break;
+                    }
+                }
+
+                if (taken) {
+                    sendJsonMessage(res, 400, 'already taken');
+                    return;
+                }
+
+                courses.push(course);
+                user.save(function(err) {
+                    if (err) {
+                        sendJsonMessage(res, 400, 'fail to join this course');
+                    } else {
+                        sendJsonMessage(res, 200, 'course taken');
+                    }
+                });
+            });
+    }
+    
+    
+    let user = req.session.user;
+    if (!permission.checkLogin(user, res)) {
+        return;
+    }
+
+    Course
+        .findById(req.params.course_id)
+        .exec(function(err, course) {
+            if (err || !course.publish) {
+                sendJsonMessage(res, 200, 'Course not found');
+                return;
+            }
+
+            saveTakenCourse(user.id, course);
+        });
 };
