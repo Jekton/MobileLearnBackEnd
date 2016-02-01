@@ -1,5 +1,8 @@
 'use strict';
 
+let myUtils = require('./utils');
+let sendJsonMessage = myUtils.sendJsonMessage;
+
 let CourseCategory = {
     get CAT_COMPUTER_SCIENCE() {
         return 0;
@@ -25,5 +28,21 @@ module.exports.cat2string = function(cat) {
 };
 
 
+exports.processRawCategories = function(res, categories) {
+    let cats = [];
+    categories.split(',').forEach(function(n) {
+        let cat = Number.parseInt(n);
+        if (!Number.isNaN(cat)
+            && exports.isCategoryValid(cat)) {
+            cats.push(cat);
+        }
+    });
 
+    if (cats.length === 0) {
+        sendJsonMessage(res, 400, 'invalid categories');
+        return null;
+    }
+    console.log('processRawCategories' + cats);
+    return cats;
+};
 

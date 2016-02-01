@@ -7,30 +7,12 @@ let sendJsonResponse = myUtils.sendJsonResponse;
 let permission = require('../utils/permission');
 let CourseUtil = require('../utils/course');
 let CourseCategoryUtil = require('../utils/course-category');
+let processRawCategories = CourseCategoryUtil.processRawCategories;
 let saveCourse = CourseUtil.saveCourse;
 let removeCourse = CourseUtil.removeCourse;
 let Course = mongoose.model('Course');
 let User = mongoose.model('User');
 
-
-function processRawCategories(res, categories) {
-    console.log('processRawCategories');
-    let cats = [];
-    categories.split(',').forEach(function(n) {
-        let cat = Number.parseInt(n);
-        if (!Number.isNaN(cat)
-            && CourseCategoryUtil.isCategoryValid(cat)) {
-            cats.push(cat);
-        }
-    });
-
-    if (cats.length === 0) {
-        sendJsonMessage(res, 400, 'invalid categories');
-        return null;
-    }
-    console.log('processRawCategories' + cats);
-    return cats;
-}
 
 
 exports.createCourse = function(req, res) {
