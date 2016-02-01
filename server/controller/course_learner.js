@@ -15,7 +15,11 @@ exports.getAllCourses = function(req, res) {
                     error: err
                 });
             } else {
-                sendJsonResponse(res, 200, courses);
+                let published = [];
+                courses.forEach(function(course) {
+                    if (course.publish) published.push(course);
+                });
+                sendJsonResponse(res, 200, published);
             }
         });
 };
