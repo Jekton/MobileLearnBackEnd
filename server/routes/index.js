@@ -29,4 +29,7 @@ router.delete('/api/course/:course_id/lecture/:lecture_id',
 router.delete('/api/course/:course_id/file/:file_id',
               CourseManager.deleteFile);
 
+let CourseLearner = require('../controller/course_learner');
+router.get('/api/allcourses', CourseLearner.getAllCourses);
+
 module.exports = router;
