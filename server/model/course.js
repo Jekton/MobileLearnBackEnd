@@ -12,8 +12,7 @@ let pathSchema = mongoose.Schema({
 let courseSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     desc: {
         type: String,

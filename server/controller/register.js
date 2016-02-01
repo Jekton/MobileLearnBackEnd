@@ -47,9 +47,13 @@ module.exports = function(req, res) {
     let user = makeUser(req.body.name,
                         req.body.email,
                         req.body.password);
+    console.log(user);
     user.save(function(err) {
         if (err) {
-            sendJsonResponse(res, 404, err);
+            sendJsonResponse(res, 404, {
+                message: 'register fail',
+                error: err
+            });
         } else {
             sendJsonResponse(res, 200, {
                 message: 'register success'
