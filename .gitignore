@@ -15,5 +15,5 @@ test.js
 
 .idea
 
-# registered user
-users.txt
+# directory for uplaoded file
+public/uploads

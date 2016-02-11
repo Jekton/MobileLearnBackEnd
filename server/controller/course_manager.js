@@ -116,6 +116,7 @@ exports.getManagedCourses = function(req, res) {
 
 exports.deleteCourse = function(req, res) {
     function removeLecturesAndFiles(course) {
+        myUtils.deleteFile('./public' + course.iconPath);
         course.lectures.forEach(
             lecture => myUtils.deleteFile('./public' + lecture.path));
         course.files.forEach(
