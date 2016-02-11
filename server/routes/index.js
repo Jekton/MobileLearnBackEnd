@@ -36,7 +36,9 @@ let CourseManager = require('../controller/course_manager');
 router.post('/api/course',
             upload.single('icon'),
             CourseManager.createCourse);
-router.put('/api/course/:course_id', CourseManager.updateCourse);
+router.put('/api/course/:course_id',
+           upload.single('icon'),
+           CourseManager.updateCourse);
 router.delete('/api/course/:course_id', CourseManager.deleteCourse);
 router.get('/api/courses', CourseManager.getManagedCourses);
 router.delete('/api/course/:course_id/lecture/:lecture_id',

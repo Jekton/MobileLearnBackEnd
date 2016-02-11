@@ -87,22 +87,26 @@ exports.updateCourse = function(req, res) {
 
     courseManager(res, req.params.course_id, user, function(course) {
         course.name = req.body.name;
-            course.categories = cats;
-            course.desc = req.body.desc;
-            course.publish = publish;
-            saveCourse(res, course, user.id, function(user, course) {
-                let courses = user.managedCourses;
-                for (let i = 0; i < courses.length; ++i) {
-                    if (courses[i].id === course.id) {
-                        console.log('find couse of managedCourses');
-                        courses[i].name = course.name;
-                        courses[i].categories = course.categories;
-                        courses[i].desc = course.desc;
-                        courses[i].publish = course.publish;
-                        break;
-                    }
+        course.categories = cats;
+        course.desc = req.body.desc;
+        course.publish = publish;
+        if (req.file) {
+            myUtils.deleteFile('./public' + course.iconPath);
+            course.iconPath = '/uploads/' + req.file.filename;
+        }
+        saveCourse(res, course, user.id, function(user, course) {
+            let courses = user.managedCourses;
+            for (let i = 0; i < courses.length; ++i) {
+                if (courses[i].id === course.id) {
+                    courses[i].name = course.name;
+                    courses[i].categories = course.categories;
+                    courses[i].desc = course.desc;
+                    courses[i].publish = course.publish;
+                    courses[i].iconPath = course.iconPath;
+                    break;
                 }
-            });
+            }
+        });
     });
 };
 
