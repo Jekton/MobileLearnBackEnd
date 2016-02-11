@@ -25,7 +25,7 @@ exports.createCourse = function(req, res) {
         return;
     };
 
-    if (!req.body.name || !req.body.categories) {
+    if (!req.body.name || !req.body.categories || !req.file) {
         sendJsonMessage(res, 400 , 'All field required');
         return;
     }
@@ -36,8 +36,9 @@ exports.createCourse = function(req, res) {
     }
 
     let course = CourseUtil.makeCourse(req.body.name,
-                                   req.body.desc ? req.body.desc : '',
-                                   cats,
+                                       req.body.desc ? req.body.desc : '',
+                                       cats,
+                                       req.file,
                                        user.email);
     saveCourse(res, course, user.id, function(user, course) {
         user.managedCourses.push(course);

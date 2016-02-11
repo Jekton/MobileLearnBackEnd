@@ -60,7 +60,7 @@ function makeUploadHandler(permissionChecker, adder) {
             myUtils.deleteFile(req.file.path);
         } else {
             if (!req.file) {
-                myUtils.sendJsonMessage(res, 400, 'not file uploaded');
+                myUtils.sendJsonMessage(res, 400, 'no file uploaded');
                 return;
             }
             

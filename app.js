@@ -15,7 +15,6 @@ require('./server/config/passport');
 // require('./install');
 
 var routes = require('./server/routes/index');
-var upload = require('./server/routes/upload');
 
 var app = express();
 
@@ -52,7 +51,6 @@ app.use(passport.initialize());
 
 
 app.use('/', routes);
-app.use('/upload', upload);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

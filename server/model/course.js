@@ -19,6 +19,9 @@ let courseSchema = mongoose.Schema({
         default: ''
     },
     categories: [Number],
+    iconPath: {
+        type: String
+    },
     createdBy: {
         // creator's email
         type: String,

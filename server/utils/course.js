@@ -42,11 +42,12 @@ exports.saveCourse = function (res, course, userId, updater) {
     });
 };
 
-exports.makeCourse = function(name, desc, categories, email) {
+exports.makeCourse = function(name, desc, categories, iconFile, email) {
     let course = new Course();
     course.name = name;
     course.desc = desc;
     course.categories = categories;
+    course.iconPath = '/uploads/' + iconFile.filename;
     course.createdBy = email;
     course.managedBy.push(email);
     course.lectureNum = 0;
