@@ -16,9 +16,13 @@ let courseSchema = mongoose.Schema({
     },
     desc: {
         type: String,
-        default: ''
+        "default": ''
     },
     categories: [Number],
+    taken: {
+        type: Boolean,
+        "default": false
+    },
     iconPath: {
         type: String
     },

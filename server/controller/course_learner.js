@@ -13,7 +13,28 @@ let permission = require('../utils/permission');
 let CourseUtil = require('../utils/course');
 let getCoursesRelatedToUser = CourseUtil.getCoursesRelatedToUser;
 
-function doGetAllCourses(res, filter) {
+function doGetAllCourses(req, res, filter) {
+    function setTakenOrNot(courses, userId) {
+        User
+            .findById(userId)
+            .exec(function(err, user) {
+                if (err) {
+                    sendJsonMessage(res, 404, 'user not found');
+                    return;
+                }
+                let takenCourses = user.takenCourses;
+                for (let i = 0; i < courses.length; ++i) {
+                    for (let j = 0; j < takenCourses.length; ++j) {
+                        if (courses[i]._id.toString() == takenCourses[j]._id) {
+                            courses[i].taken = true;
+                        }
+                    }
+                }
+
+                sendJsonResponse(res, 200, courses);
+            });
+    }
+    
     Course
         .find({}, function(err, courses) {
             if (err) {
@@ -28,13 +49,19 @@ function doGetAllCourses(res, filter) {
                 });
                 
                 let responsedCourses = filter(published);
-                sendJsonResponse(res, 200, responsedCourses);
+
+                if (req.session.user) {
+                    setTakenOrNot(responsedCourses, req.session.user.id);
+                } else {
+                    // no login, directly send it back
+                    sendJsonResponse(res, 200, responsedCourses);
+                }
             }
         });
 };
 
 exports.getAllCourses = function(req, res) {
-    doGetAllCourses(res, function(courses) {
+    doGetAllCourses(req, res, function(courses) {
         // no-op
         return courses;
     });
@@ -45,7 +72,7 @@ exports.getAllCoursesOfCats = function(req, res) {
     let cats = processRawCategories(res, req.params.categories);
     if (cats === null) return;
     
-    doGetAllCourses(res, function(courses) {
+    doGetAllCourses(req, res, function(courses) {
         let result = [];
 
         courses.forEach(function(course) {
@@ -86,6 +113,7 @@ exports.takeCourse = function(req, res) {
                     return;
                 }
 
+                courses.taken = true;
                 courses.push(course);
                 user.save(function(err) {
                     if (err) {
