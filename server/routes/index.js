@@ -62,6 +62,7 @@ router.get('/api/allcourses', CourseLearner.getAllCourses);
 router.get('/api/allcourses/:categories', CourseLearner.getAllCoursesOfCats);
 router.get('/api/takecourse/:course_id', CourseLearner.takeCourse);
 router.get('/api/takencourses', CourseLearner.takenCourses);
+router.get('/api/takencourses/:course_id', CourseLearner.getTakenCourse);
 
 
 

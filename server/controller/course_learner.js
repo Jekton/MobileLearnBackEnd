@@ -146,7 +146,20 @@ exports.takeCourse = function(req, res) {
 
 exports.takenCourses = function(req, res) {
     getCoursesRelatedToUser(req, res, 'takenCourses', function(user) {
-        console.log(user.takenCourses);
         return user.takenCourses;
+    });
+};
+
+
+exports.getTakenCourse = function(req, res) {
+    console.log(req.params.course_id);
+    getCoursesRelatedToUser(req, res, 'takenCourses', function(user) {
+        let result = null;
+        user.takenCourses.forEach(function(course) {
+            if (course._id.toString() == req.params.course_id) {
+                result = course;
+            }
+        });
+        return result;
     });
 };

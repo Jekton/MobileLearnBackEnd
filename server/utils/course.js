@@ -113,12 +113,17 @@ exports.getCoursesRelatedToUser = function(req,
         .exec(function(err, user) {
             if (err) {
                 sendJsonResponse(res, 400, {
-                    message: 'fail to create course',
+                    message: 'fail to get courses',
                     error: err
                 });
             } else {
                 let courses = chooser(user);
-                sendJsonResponse(res, 200, courses);
+                console.log(courses);
+                if (courses == null) {
+                    sendJsonMessage(res, 404, 'Course not found');
+                } else {
+                    sendJsonResponse(res, 200, courses);
+                }
             }
         });
 
