@@ -16,7 +16,6 @@ exports.saveCourse = function (res, course, userId, updater) {
             });
             return;
         }
-        console.log('%j', course);
         User.findById(userId)
             .select('managedCourses')
             .exec(function(err, user) {
@@ -118,7 +117,6 @@ exports.getCoursesRelatedToUser = function(req,
                 });
             } else {
                 let courses = chooser(user);
-                console.log(courses);
                 if (courses == null) {
                     sendJsonMessage(res, 404, 'Course not found');
                 } else {
@@ -126,5 +124,23 @@ exports.getCoursesRelatedToUser = function(req,
                 }
             }
         });
+};
 
+exports.getUser = function (req, res, operator) {
+    let user = req.session.user;
+    if (!permission.checkLogin(user, res)) {
+        return;
+    }
+
+    User.findById(user.id)
+        .exec(function(err, user) {
+                  if (err) {
+                      sendJsonResponse(res, 400, {
+                          message: 'fail to get courses',
+                          error: err
+                      });
+                  } else {
+                      operator(user);
+                  }
+              });
 };

@@ -17,8 +17,8 @@ let userSchema = new mongoose.Schema({
     hash: String,
     salt: String,
     capability: Number,
-    managedCourses: [course.courseSchema],
-    takenCourses: [course.courseSchema]
+    managedCourses: [String],  // just store course id
+    takenCourses: [String]
 });
 
 

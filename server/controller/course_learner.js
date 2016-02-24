@@ -12,6 +12,7 @@ let permission = require('../utils/permission');
 
 let CourseUtil = require('../utils/course');
 let getCoursesRelatedToUser = CourseUtil.getCoursesRelatedToUser;
+let getUser = CourseUtil.getUser;
 
 function doGetAllCourses(req, res, filter) {
     function setTakenOrNot(courses, userId) {
@@ -19,13 +20,13 @@ function doGetAllCourses(req, res, filter) {
             .findById(userId)
             .exec(function(err, user) {
                 if (err) {
-                    sendJsonMessage(res, 404, 'user not found');
+                    sendJsonMessage(res, 401, 'user not found');
                     return;
                 }
                 let takenCourses = user.takenCourses;
                 for (let i = 0; i < courses.length; ++i) {
                     for (let j = 0; j < takenCourses.length; ++j) {
-                        if (courses[i]._id.toString() == takenCourses[j]._id) {
+                        if (courses[i]._id.toString() == takenCourses[j]) {
                             courses[i].taken = true;
                         }
                     }
@@ -34,7 +35,7 @@ function doGetAllCourses(req, res, filter) {
                 sendJsonResponse(res, 200, courses);
             });
     }
-    
+
     Course
         .find({}, function(err, courses) {
             if (err) {
@@ -48,17 +49,17 @@ function doGetAllCourses(req, res, filter) {
                     if (course.publish) published.push(course);
                 });
                 
-                let responsedCourses = filter(published);
+                let respondedCourses = filter(published);
 
                 if (req.session.user) {
-                    setTakenOrNot(responsedCourses, req.session.user.id);
+                    setTakenOrNot(respondedCourses, req.session.user.id);
                 } else {
                     // no login, directly send it back
-                    sendJsonResponse(res, 200, responsedCourses);
+                    sendJsonResponse(res, 200, respondedCourses);
                 }
             }
         });
-};
+}
 
 exports.getAllCourses = function(req, res) {
     doGetAllCourses(req, res, function(courses) {
@@ -102,7 +103,7 @@ exports.takeCourse = function(req, res) {
                 let courses = user.takenCourses;
                 let taken = false;
                 for (let i = 0; i < courses.length; ++i) {
-                    if (courses[i]._id.toString() == course._id) {
+                    if (courses[i] == course._id) {
                         taken = true;
                         break;
                     }
@@ -114,7 +115,7 @@ exports.takeCourse = function(req, res) {
                 }
 
                 courses.taken = true;
-                courses.push(course);
+                courses.push(course._id.toString());
                 user.save(function(err) {
                     if (err) {
                         sendJsonMessage(res, 400, 'fail to join this course');
@@ -144,22 +145,48 @@ exports.takeCourse = function(req, res) {
 };
 
 
-exports.takenCourses = function(req, res) {
-    getCoursesRelatedToUser(req, res, 'takenCourses', function(user) {
-        return user.takenCourses;
+exports.getTakenCourses = function(req, res) {
+    getUser(req, res, function(user) {
+        doGetAllCourses(req, res, function(courses) {
+            let takenCourses = [];
+            courses.forEach(function(course) {
+                for (let i = 0; i < user.takenCourses.length; ++i) {
+                    if (user.takenCourses[i] == course._id) {
+                        takenCourses.push(course);
+                    }
+                }
+            });
+            return takenCourses;
+        });
     });
 };
 
 
 exports.getTakenCourse = function(req, res) {
-    console.log(req.params.course_id);
-    getCoursesRelatedToUser(req, res, 'takenCourses', function(user) {
-        let result = null;
-        user.takenCourses.forEach(function(course) {
-            if (course._id.toString() == req.params.course_id) {
-                result = course;
+
+    function isTaken(user, courseId) {
+        for (let i = 0; i < user.takenCourses.length; ++i) {
+            if (user.takenCourses[i] == courseId) {
+                return true;
+            }
+        }
+    }
+
+    function getCourse(res, courseId) {
+        Course.findById(courseId).exec(function(err, course) {
+            if (err) {
+                sendJsonMessage(res, 404, 'course not found');
+            } else {
+                sendJsonResponse(res, 200, course);
             }
         });
-        return result;
+    }
+
+    getUser(req, res, function(user) {
+        if (!isTaken(user, req.params.course_id)) {
+            sendJsonMessage(res, 404, 'course not found');
+            return;
+        }
+        getCourse(res, req.params.course_id);
     });
 };

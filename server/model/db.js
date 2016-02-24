@@ -1,7 +1,7 @@
 'use strict';
 
 let mongoose = require('mongoose');
-const DB_URL = 'mongodb://localhost/mobilelearn';
+let DB_URL = 'mongodb://localhost/mobilelearn';
 
 if (process.env.NODE_ENV === 'production') {
     DB_URL = process.env.MONGOLAB_URI;
