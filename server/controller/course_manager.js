@@ -95,17 +95,7 @@ exports.updateCourse = function(req, res) {
             course.iconPath = '/uploads/' + req.file.filename;
         }
         saveCourse(res, course, user.id, function(user, course) {
-            let courses = user.managedCourses;
-            for (let i = 0; i < courses.length; ++i) {
-                if (courses[i].id === course.id) {
-                    courses[i].name = course.name;
-                    courses[i].categories = course.categories;
-                    courses[i].desc = course.desc;
-                    courses[i].publish = course.publish;
-                    courses[i].iconPath = course.iconPath;
-                    break;
-                }
-            }
+            // no-op
         });
     });
 };
