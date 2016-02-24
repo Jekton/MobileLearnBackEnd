@@ -10,7 +10,7 @@ let permission = require('../utils/permission');
 /**
  * save course and save to the creator
  */
-exports.saveCourse = function (res, course, userId, updater) {
+exports.saveCourseAndToUser = function (res, course, userId, updater) {
     course.save(function(err, course) {
         if (err) {
             myUtils.sendJsonResponse(res, 400, {
@@ -40,9 +40,23 @@ exports.saveCourse = function (res, course, userId, updater) {
                         }
                     });
                 }
-            });  
+            });
     });
 };
+
+exports.saveCourse = function (res, course) {
+    course.save(function(err, course) {
+        if (err) {
+            myUtils.sendJsonResponse(res, 400, {
+                message: 'fail to create course',
+                error: err
+            });
+        } else {
+            myUtils.sendJsonResponse(res, 200, course);
+        }
+    });
+};
+
 
 exports.makeCourse = function(name, desc, categories, iconFile, email) {
     let course = new Course();

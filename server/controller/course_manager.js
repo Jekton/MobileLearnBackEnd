@@ -10,6 +10,7 @@ let processRawCategories = CourseCategoryUtil.processRawCategories;
 
 let CourseUtil = require('../utils/course');
 let saveCourse = CourseUtil.saveCourse;
+let saveCourseAndToUser = CourseUtil.saveCourseAndToUser;
 let removeCourse = CourseUtil.removeCourse;
 let getUser = CourseUtil.getUser;
 let getCoursesRelatedToUser = CourseUtil.getCoursesRelatedToUser;
@@ -41,7 +42,7 @@ exports.createCourse = function(req, res) {
                                        cats,
                                        req.file,
                                        user.email);
-    saveCourse(res, course, user.id, function(user, course) {
+    saveCourseAndToUser(res, course, user.id, function(user, course) {
         user.managedCourses.push(course._id.toString());
     });
 };
@@ -61,7 +62,6 @@ function courseManager(res, courseId, user, manager) {
                 sendJsonMessage(res, 401, 'Permission deny');
                 return;
             }
-
             manager(course);
         });
 }
@@ -95,9 +95,7 @@ exports.updateCourse = function(req, res) {
             myUtils.deleteFile('./public' + course.iconPath);
             course.iconPath = '/uploads/' + req.file.filename;
         }
-        saveCourse(res, course, user.id, function(user, course) {
-            // no-op
-        });
+        saveCourse(res, course);
     });
 };
 

@@ -10,7 +10,7 @@ let Path = mongoose.model('Path');
 const crypto = require('crypto');
 
 
-function doAdd(res, courseId, userId, file, updater) {
+function doAdd(res, courseId, file, updater) {
     Course
         .findById(courseId)
         .exec(function(err, course) {
@@ -28,27 +28,19 @@ function doAdd(res, courseId, userId, file, updater) {
             toBeAdded.path = '/uploads/' + file.filename;
 
             updater(course, toBeAdded);
-            saveCourse(res, course, userId, function(user, course) {
-                let courses = user.managedCourses;
-                for (let i = 0; i < courses.length; ++i) {
-                    if (courses[i].id === course.id) {
-                        updater(courses[i], toBeAdded);
-                        break;
-                    }
-                }
-            });
+            saveCourse(res, course);
         });
 }
 
-function addLecture(res, courseId, userId, file) {
-    doAdd(res, courseId, userId, file, function(course, toBeAdded) {
+function addLecture(res, courseId, file) {
+    doAdd(res, courseId, file, function(course, toBeAdded) {
         course.lectures.push(toBeAdded);
         course.lectureNum++;        
     });
 }
 
-function addFile(res, courseId, userId, file) {
-    doAdd(res, courseId, userId, file, function(course, toBeAdded) {
+function addFile(res, courseId, file) {
+    doAdd(res, courseId, file, function(course, toBeAdded) {
         course.files.push(toBeAdded);
     });
 }
@@ -66,7 +58,6 @@ function makeUploadHandler(permissionChecker, adder) {
             
             adder(res,
                   req.params.course_id,
-                  user.id,
                   req.file);
         }
     }
