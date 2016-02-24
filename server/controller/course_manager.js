@@ -11,6 +11,7 @@ let processRawCategories = CourseCategoryUtil.processRawCategories;
 let CourseUtil = require('../utils/course');
 let saveCourse = CourseUtil.saveCourse;
 let removeCourse = CourseUtil.removeCourse;
+let getUser = CourseUtil.getUser;
 let getCoursesRelatedToUser = CourseUtil.getCoursesRelatedToUser;
 
 let Course = mongoose.model('Course');
@@ -102,8 +103,25 @@ exports.updateCourse = function(req, res) {
 
 
 exports.getManagedCourses = function(req, res) {
-    getCoursesRelatedToUser(req, res, 'managedCourses', function(user) {
-        return user.managedCourses;
+    getUser(req, res, function(user) {
+        Course.find({}, function (err, courses) {
+            if (err) {
+                sendJsonResponse(res, 404, {
+                    message: 'Course not found',
+                    error: err
+                });
+            } else {
+                let managedCourses = [];
+                courses.forEach(function(course) {
+                    for (let i = 0; i < user.managedCourses.length; ++i) {
+                        if (user.managedCourses[i] == course._id) {
+                            managedCourses.push(course);
+                        }
+                    }
+                });
+                sendJsonResponse(res, 200, managedCourses);
+            }
+        });
     });
 };
 

@@ -135,7 +135,7 @@ exports.takeCourse = function(req, res) {
     Course
         .findById(req.params.course_id)
         .exec(function(err, course) {
-            if (err || !course.publish) {
+            if (err || !course || !course.publish) {
                 sendJsonMessage(res, 200, 'Course not found');
                 return;
             }
