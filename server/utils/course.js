@@ -64,8 +64,7 @@ exports.removeCourse = function(res, courseId) {
         let courses = user.managedCourses;
         let i;
         for (i = 0; i < courses.length; ++i) {
-            // directly compare these two ids won't success
-            if (courses[i]._id.toString() == courseId) {
+            if (courses[i] == courseId) {
                 break;
             }
         }
