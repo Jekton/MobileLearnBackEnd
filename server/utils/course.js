@@ -7,6 +7,9 @@ let sendJsonMessage = myUtils.sendJsonMessage;
 let sendJsonResponse = myUtils.sendJsonResponse;
 let permission = require('../utils/permission');
 
+/**
+ * save course and save to the creator
+ */
 exports.saveCourse = function (res, course, userId, updater) {
     course.save(function(err, course) {
         if (err) {

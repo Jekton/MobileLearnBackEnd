@@ -23,7 +23,7 @@ exports.createCourse = function(req, res) {
 
     if (!permission.checkCourseCreatorCap(user, res)) {
         return;
-    };
+    }
 
     if (!req.body.name || !req.body.categories || !req.file) {
         sendJsonMessage(res, 400 , 'All field required');
@@ -41,7 +41,7 @@ exports.createCourse = function(req, res) {
                                        req.file,
                                        user.email);
     saveCourse(res, course, user.id, function(user, course) {
-        user.managedCourses.push(course);
+        user.managedCourses.push(course._id.toString());
     });
 };
 
