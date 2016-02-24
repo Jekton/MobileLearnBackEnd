@@ -166,39 +166,6 @@ function doDeleteLectureOrFile(res,
                                courseId,
                                fileId,
                                typeChooser) {
-    console.log('enter doDeleteLectureOrFile');
-
-    function removeFileOf(user) {
-        let courses = user.managedCourses;
-        let i;
-        for (i = 0; i < courses.length; ++i) {
-            // directly compare these two ids won't success
-            if (courses[i]._id.toString() == courseId) {
-                console.log('found course of managed by user');
-                break;
-            }
-        }
-        if (i === courses.length) return;
-        
-        let files = typeChooser(courses[i]);
-        for (i = 0; i < files.length; ++i) {
-            // directly compare these two ids won't success
-            if (files[i].id === fileId) {
-                console.log('found file of managed by user');
-                break;
-            }
-        }
-        if (i === files.length) return;
-
-        files.splice(i, 1);
-
-        user.save(function(err) {
-            if (err) {
-                console.log('error: %j', err);
-            }
-        });
-    }
-
     
     if (!permission.checkLogin(user, res)) {
         return;
@@ -222,15 +189,9 @@ function doDeleteLectureOrFile(res,
                 if (err) {
                     console.error('error: %j', err);
                     sendJsonMessage(res, 500, 'server error');
+                } else {
+                    sendJsonMessage(res, 200, 'file deleted');
                 }
-            });
-
-            User.find({}, function(err, users) {
-                users.forEach(function(user) {
-                    removeFileOf(user);
-                });
-                
-                sendJsonMessage(res, 200, 'file deleted');
             });
         } else {
             sendJsonMessage(res, 400, 'file not found');
